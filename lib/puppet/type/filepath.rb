@@ -8,7 +8,7 @@
 #
 # @author John Edge <edge.jm@gmail.com>
 Puppet::Type.newtype(:filepath) do
-  @doc = <<~DOCSTRING
+  @doc = <<-DOCSTRING
       This type provides Puppet with the capabilities to manage recursive directory filepaths, creating all directories in the specified filepath.
   DOCSTRING
 
