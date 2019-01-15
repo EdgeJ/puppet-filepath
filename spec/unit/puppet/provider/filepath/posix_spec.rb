@@ -33,6 +33,29 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
 
   after(:each) { cleantempdir }
 
+  describe '#exists?' do
+    context 'when the file exists' do
+      it 'returns true' do
+        allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+        allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+
+        FileUtils.touch(path)
+
+        expect(provider.exists?).to be true
+      end
+    end
+
+    context 'when the file does not exist' do
+      it 'returns false' do
+        cleantempdir
+
+        expect(provider.exists?).to be false
+      end
+    end
+  end
+
   describe '#create' do
     it 'creates the resource' do
       allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)

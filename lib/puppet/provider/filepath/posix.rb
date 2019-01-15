@@ -4,6 +4,10 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
   require 'puppet/util/symbolic_file_mode'
   include Puppet::Util::SymbolicFileMode
 
+  def exists?
+    !@resource.stat.nil?
+  end
+
   def create
     mode = @resource.should(:mode)
     mkdir_r(@resource[:path], mode, @resource[:managedepth])

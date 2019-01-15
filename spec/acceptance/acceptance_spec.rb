@@ -6,8 +6,8 @@ hosts.each do |host|
       <<-MANIFEST
       filepath { '/app/test/filepath':
         ensure => present,
-        owner  => 'foo',
-        group  => 'bar',
+        owner  => 'root',
+        group  => 'root',
         mode   => '0777',
         managedepth => 3,
       }
