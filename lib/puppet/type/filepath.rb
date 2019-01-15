@@ -99,4 +99,17 @@ Puppet::Type.newtype(:filepath) do
               nil
             end
   end
+
+  # There are some cases where all of the work does not get done on
+  # file creation/modification, so we have to do some extra checking.
+  def property_fix
+    properties.each do |thing|
+      next unless [:mode, :owner, :group, :seluser, :selrole, :seltype, :selrange].include?(thing.name)
+
+      # Make sure we get a new stat object
+      @stat = :needs_stat
+      currentvalue = thing.retrieve
+      thing.sync unless thing.safe_insync?(currentvalue)
+    end
+  end
 end

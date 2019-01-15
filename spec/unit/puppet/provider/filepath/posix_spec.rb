@@ -9,10 +9,12 @@ end
 
 def cleantempdir
   Dir.rmdir tempdir
+rescue Errno::ENOENT
+  return
 end
 
 # rubocop:disable RSpec/InstanceVariable
-RSpec.describe Puppet::Type.type(:filepath).provider(:posix) do
+describe Puppet::Type.type(:filepath).provider(:posix) do
   let(:path) { tempdir }
 
   let(:resource) do
@@ -32,7 +34,19 @@ RSpec.describe Puppet::Type.type(:filepath).provider(:posix) do
 
   describe '#create' do
     it 'creates the resource' do
-      expect(Dir.exist?(tempdir)).to be true
+      passwd = Struct::Passwd.new('foo', nil, 502, 502)
+
+      allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+      allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+      allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+      allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+
+      allow(File).to receive(:chown).with(502, nil, path)
+      allow(File).to receive(:chown).with(nil, 502, path)
+
+      expect(Dir).to receive(:mkdir)
+
+      provider.create
     end
   end
 

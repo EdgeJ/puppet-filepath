@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).provider(:posix)) do
+  require 'puppet/util/symbolic_file_mode'
+  include Puppet::Util::SymbolicFileMode
+
   def create
     mode = @resource.should(:mode)
     mkdir_r(@resource[:path], mode, @resource[:managedepth])
