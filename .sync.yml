@@ -1,6 +1,16 @@
 ---
 appveyor.yml:
   delete: true
+Gemfile:
+  optional:
+    ':acceptance':
+      - gem: beaker
+        version: '~> 4'
+      - gem: beaker-puppet
+        version: '~> 1'
+      - gem: beaker-rspec
+        version: '~> 6'
+      - gem: beaker-docker
 .gitlab-ci.yml:
   delete: true
 spec/spec_helper.rb:
