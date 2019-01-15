@@ -12,7 +12,7 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
   end
 
   def update
-    true
+    @resource.send(:property_fix)
   end
 
   def destroy

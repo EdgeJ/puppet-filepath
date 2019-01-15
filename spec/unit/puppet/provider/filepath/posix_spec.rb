@@ -29,13 +29,13 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
   end
 
   let(:provider) { resource.provider }
+  let(:passwd) { Struct::Passwd.new('foo', nil, 502, 502) }
+
 
   after(:each) { cleantempdir }
 
   describe '#create' do
     it 'creates the resource' do
-      passwd = Struct::Passwd.new('foo', nil, 502, 502)
-
       allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
       allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
       allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
@@ -52,6 +52,15 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
 
   describe '#update' do
     it 'updates the resource' do
+      allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+      allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+      allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+      allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+
+      expect(File).to receive(:chown).with(502, nil, path)
+      expect(File).to receive(:chown).with(nil, 502, path)
+
+      provider.update
     end
   end
 
