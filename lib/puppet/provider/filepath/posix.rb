@@ -16,20 +16,22 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
   end
 
   def destroy
-    true
+    rmdir_r(@resource[:path], @resource[:managedepth])
   end
 
   def owner=(should)
     File.send(:chown, should, nil, resource[:path])
   rescue StandardError => detail
-    raise Puppet::Error, _("Failed to set owner to '%{should}': %{detail}") % { should: should, detail: detail }, detail.backtrace
+    raise Puppet::Error, "Failed to set owner to '#{should}': #{detail}", detail.backtrace
   end
 
   def group=(should)
     File.send(:chown, nil, should, resource[:path])
   rescue StandardError => detail
-    raise Puppet::Error, _("Failed to set group to '%{should}': %{detail}") % { should: should, detail: detail }, detail.backtrace
+    raise Puppet::Error, "Failed to set group to '#{should}': #{detail}", detail.backtrace
   end
+
+  private
 
   def mkdir(path, mode = nil, managedepth = 0)
     if mode && !managedepth.zero?
@@ -47,5 +49,12 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
       mkdir_r(parent, mode, managedepth - 1)
     end
     mkdir(path, mode, managedepth)
+  end
+
+  def rmdir_r(path, managedepth)
+    return unless managedepth >= 1
+    raise Puppet::Error, 'Refusing to delete /' if path == '/'
+    Dir.rmdir(path)
+    rmdir_r(File.dirname(path), managedepth - 1)
   end
 end

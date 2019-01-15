@@ -31,7 +31,6 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
   let(:provider) { resource.provider }
   let(:passwd) { Struct::Passwd.new('foo', nil, 502, 502) }
 
-
   after(:each) { cleantempdir }
 
   describe '#create' do
@@ -64,8 +63,42 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
     end
   end
 
-  describe '#delete' do
-    it 'deletes the resource' do
+  describe '#destroy' do
+    context 'with managedepth => 2' do
+      let(:resource) do
+        Puppet::Type.type(:filepath).new(
+          path: '/path/to/moog',
+          ensure: 'present',
+          managedepth: 2,
+          provider: described_class.name,
+        )
+      end
+
+      it 'deletes the resource 2 directories deep' do
+        expect(Dir).to receive(:rmdir).with('/path/to/moog')
+        expect(Dir).to receive(:rmdir).with('/path/to')
+        expect(Dir).not_to receive(:rmdir).with('/path')
+
+        provider.destroy
+      end
+    end
+
+    context 'with default managedepth' do
+      let(:resource) do
+        Puppet::Type.type(:filepath).new(
+          path: '/path/to/moog',
+          ensure: 'present',
+          provider: described_class.name,
+        )
+      end
+
+      it 'deletes the resource 1 directories deep' do
+        expect(Dir).to receive(:rmdir).with('/path/to/moog')
+        expect(Dir).not_to receive(:rmdir).with('/path/to')
+        expect(Dir).not_to receive(:rmdir).with('/path')
+
+        provider.destroy
+      end
     end
   end
 
