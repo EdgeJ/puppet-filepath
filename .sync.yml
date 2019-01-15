@@ -1,3 +1,9 @@
 ---
+appveyor.yml:
+  delete: true
+.gitlab-ci.yml:
+  delete: true
 spec/spec_helper.rb:
   mock_with: ':rspec'
+.travis.yml:
+  unmanaged: true
