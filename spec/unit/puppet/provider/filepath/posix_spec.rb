@@ -9,7 +9,7 @@ end
 
 def cleantempdir
   Dir.rmdir tempdir
-rescue Errno::ENOENT
+rescue Errno::ENOENT, Errno::ENOTEMPTY
   return
 end
 
@@ -121,6 +121,16 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
         expect(Dir).not_to receive(:rmdir).with('/path')
 
         provider.destroy
+      end
+    end
+
+    context 'when directory is not empty' do
+      it do
+        allow(Dir).to receive(:rmdir).with(path).and_raise(Errno::ENOTEMPTY)
+
+        expect {
+          provider.destroy
+        }.to raise_error(Puppet::Error, "Cannot delete #{path}, it is not empty")
       end
     end
   end

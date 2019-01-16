@@ -58,7 +58,11 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
   def rmdir_r(path, managedepth)
     return unless managedepth >= 1
     raise Puppet::Error, 'Refusing to delete /' if path == '/'
-    Dir.rmdir(path)
+    begin
+      Dir.rmdir(path)
+    rescue Errno::ENOTEMPTY
+      raise Puppet::Error, "Cannot delete #{path}, it is not empty"
+    end
     rmdir_r(File.dirname(path), managedepth - 1)
   end
 end

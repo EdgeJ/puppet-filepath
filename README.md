@@ -10,8 +10,6 @@ needless hackery.
 
 1. [Description](#description)
 2. [Setup - The basics of getting started with filepath](#setup)
-    * [What filepath affects](#what-filepath-affects)
-    * [Setup requirements](#setup-requirements)
     * [Beginning with filepath](#beginning-with-filepath)
 3. [Usage - Configuration options and additional functionality](#usage)
 4. [Limitations - OS compatibility, etc.](#limitations)
@@ -93,11 +91,55 @@ file { '/opt/puppetlabs/bin/moog':
 }
 ```
 
+To remove a filepath, specify the path to be removed and use `managedepth` to
+control how many levels of the directory tree are removed.
+
+```sh
+$ ls /path/to/
+deleted
+
+$ ls /path/to/deleted
+dir
+```
+
+```puppet
+filepath { '/path/to/deleted/dir':
+  ensure => absent,
+  managedepth => 2,
+}
+```
+
+```sh
+$ ls /path/to
+
+$ ls /path/to/deleted
+ls: /path/to/deleted: No such file or directory
+```
+
 And that's it! Very simple and without resorting to hacks to get the job done.
 
 ## Limitations
 
-Not fully implemented, more to come.
+Currently no support for non-posix operatingsystems (that means you, Windows!)
+
+The `filepath` resource does not manage files or contents of any directories,
+only creation or deletion of the path itself. Use the built-in `file` resource
+to set or remove any file or directory content.
+
+
+Tested on Centos 7 and Ubuntu 14.04.
 
 ## Development
-In progress... :)
+
+The module is largely developed with the Puppet Development Kit (pdk) and can
+be validated and tested with that tool. The exception is Beaker tests, which
+require installation with Bundler for the gems and execution via `rake beaker`.
+
+To submit a change to the module:
+
+* Fork the repo.
+* Make any necessary changes and validate syntax with `pdk validate`.
+* Add any unit tests for any additional features.
+* If applicable, add additional acceptance tests.
+* Ensure all tests are passing with `pdk test unit` or `rake spec`.
+* Submit a PR.
