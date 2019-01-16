@@ -10,7 +10,7 @@ before_install:
   - bundle -v
 script:
   - 'bundle exec rake $CHECK'
-bundler_args: --without system_tests acceptance
+bundler_args: --without acceptance
 rvm:
   - 2.5.0
 env:
@@ -42,10 +42,8 @@ notifications:
   email: false
 deploy:
   provider: puppetforge
-  user: puppet
+  user: edgej
   password:
-    secure: ""
+    secure: "cWBfETr0GqMZvssq0ZOOaWaIyf51cimsRmVhByohoNwp+HSqSoTB9EdrAUPDaWCUdVBHqXjbH+8pZ2JcrBMgjRq1XLjW4viLxTb5yTBiM7hXDphftRMIvkxOr+QRt/BuFzhXQyUMGm/oPRH7tYXuFf3SAG5zrMaxYqDfMTZyEfLofocP6nA7oyeRXdSE+ZLo67X23v0jezDE9cdzwybaafNRz7kPdwzX7b46bGZu+GnE2MideA0q1hUEzW7222Lin4/A3eIgP6D7jdGgXxKr4ZijWlussLlsnfN2IK0lrGcpWWeOBS5zaFF9CWK7Oj44WdO301lEX/ywqeI4XbTOlw3fJ58bxdWn0pezAlxM8pkMOI1c15Pyw44AwjGyD6wJKiuEYALM9ZDS3VWCkdKjO1PCB6iYfU31IwrRPD/jJISQ8SyCGDcRv7bbu/plh0Ge7qvLHy6fzUKtUwvPIiO+e6DnVWmPUmpjxsb/6KBazBxvQ2KPRw+oEK+bDfCG8ctePEFrs4Zedo12d1kt1E8CYzcvOmLk59suNGp42tJfji/S09iFgtM1+OSvUo6Ka1uVe1pN6v3+Y7t2xXFPm4m43rtXScJD258bxaaNla+ZWrnBX2PASfNnNNF6bk5dwl9/OSF2Cl/Wyf61G6bG6hvnHYHWZmbDI6O2h+abPE/n9sc="
   on:
     tags: true
-    all_branches: true
-    condition: "$DEPLOY_TO_FORGE = yes"
