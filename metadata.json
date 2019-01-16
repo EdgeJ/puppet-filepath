@@ -1,8 +1,8 @@
 {
   "name": "edgej-filepath",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "EdgeJ",
-  "summary": "",
+  "summary": "Recursively manage directory paths natively",
   "license": "Apache-2.0",
   "source": "",
   "dependencies": [
@@ -12,24 +12,28 @@
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
+        "6",
         "7"
       ]
     },
     {
       "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
+        "6",
         "7"
       ]
     },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
+        "6",
         "7"
       ]
     },
     {
       "operatingsystem": "Scientific",
       "operatingsystemrelease": [
+        "6",
         "7"
       ]
     },
@@ -42,7 +46,9 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "16.04"
+        "14.04",
+        "16.04",
+        "18.04"
       ]
     },
     {
