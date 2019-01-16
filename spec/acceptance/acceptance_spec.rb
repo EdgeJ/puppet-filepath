@@ -73,7 +73,7 @@ hosts.each do |host|
           MANIFEST
         end
 
-        it 'only manages two levels deep' do
+        it 'only manages two levels deep', node: host do
           apply_manifest_on(host, pp, catch_failures: true)
           expect(file('/app/test/filepath')).to be_owned_by('foo')
           expect(file('/app')).not_to be_owned_by('foo')
@@ -91,7 +91,7 @@ hosts.each do |host|
 
       it_behaves_like 'deletes_file', host, manifest, '/app/test/filepath'
 
-      context 'with managedepth => 2 and directory three levels deep' do
+      context 'with managedepth => 2 and directory three levels deep', node: host do
         let(:pp) { "filepath { '/app/test/filepath': ensure => absent, managedepth => 2, }" }
 
         it 'only deletes two levels deep' do
