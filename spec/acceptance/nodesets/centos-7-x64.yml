@@ -1,0 +1,12 @@
+---
+
+HOSTS:
+  centos-7-x64:
+    platform: el-7-x86_64
+    image: centos:7
+    hypervisor: docker
+    docker_preserve_image: true
+    docker_cmd: '["/usr/sbin/init"]'
+CONFIG:
+  type: foss
+  trace_limit: 200

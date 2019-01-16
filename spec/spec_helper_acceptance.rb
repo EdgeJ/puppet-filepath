@@ -85,3 +85,5 @@ RSpec.configure do |c|
     end
   end
 end
+
+require 'shared_examples'

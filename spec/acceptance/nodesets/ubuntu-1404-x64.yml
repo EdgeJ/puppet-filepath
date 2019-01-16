@@ -1,12 +1,6 @@
 ---
 
 HOSTS:
-  centos-7-x64:
-    platform: el-7-x86_64
-    image: centos:7
-    hypervisor: docker
-    docker_preserve_image: true
-    docker_cmd: '["/usr/sbin/init"]'
   ubuntu-1404-x64:
     platform: ubuntu-14.04-amd64
     hypervisor: docker
