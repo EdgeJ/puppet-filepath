@@ -10,30 +10,38 @@ before_install:
   - bundle -v
 script:
   - 'bundle exec rake $CHECK'
-bundler_args: --without acceptance
+bundler_args: --without acceptance release
 rvm:
   - 2.5.0
 env:
   global:
     - BEAKER_PUPPET_COLLECTION=puppet6 PUPPET_GEM_VERSION="~> 6.0"
+stages:
+  - validate
+  - spec
+  - acceptance
+  - build
 matrix:
   fast_finish: true
   include:
-    -
-      bundler_args:
+    - stage: acceptance
+      bundler_args: --without release
       env: CHECK=beaker
       services: docker
       sudo: required
-    -
+    - stage: validate
       env: CHECK="syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop"
-    -
+    - stage: spec
       env: CHECK=spec
-    -
+    - stage: spec
       env: PUPPET_GEM_VERSION="~> 5.0" CHECK=spec
       rvm: 2.4.4
-    -
+    - stage: spec
       env: PUPPET_GEM_VERSION="~> 4.0" CHECK=spec
       rvm: 2.1.9
+    - stage: build
+      bundler_args: --without acceptance
+      env: CHECK=build DEPLOY_TO_FORGE=yes
 branches:
   only:
     - master
@@ -44,6 +52,8 @@ deploy:
   provider: puppetforge
   user: edgej
   password:
-    secure: "cWBfETr0GqMZvssq0ZOOaWaIyf51cimsRmVhByohoNwp+HSqSoTB9EdrAUPDaWCUdVBHqXjbH+8pZ2JcrBMgjRq1XLjW4viLxTb5yTBiM7hXDphftRMIvkxOr+QRt/BuFzhXQyUMGm/oPRH7tYXuFf3SAG5zrMaxYqDfMTZyEfLofocP6nA7oyeRXdSE+ZLo67X23v0jezDE9cdzwybaafNRz7kPdwzX7b46bGZu+GnE2MideA0q1hUEzW7222Lin4/A3eIgP6D7jdGgXxKr4ZijWlussLlsnfN2IK0lrGcpWWeOBS5zaFF9CWK7Oj44WdO301lEX/ywqeI4XbTOlw3fJ58bxdWn0pezAlxM8pkMOI1c15Pyw44AwjGyD6wJKiuEYALM9ZDS3VWCkdKjO1PCB6iYfU31IwrRPD/jJISQ8SyCGDcRv7bbu/plh0Ge7qvLHy6fzUKtUwvPIiO+e6DnVWmPUmpjxsb/6KBazBxvQ2KPRw+oEK+bDfCG8ctePEFrs4Zedo12d1kt1E8CYzcvOmLk59suNGp42tJfji/S09iFgtM1+OSvUo6Ka1uVe1pN6v3+Y7t2xXFPm4m43rtXScJD258bxaaNla+ZWrnBX2PASfNnNNF6bk5dwl9/OSF2Cl/Wyf61G6bG6hvnHYHWZmbDI6O2h+abPE/n9sc="
+    secure: "nwH+GMIILYvDvtMQfPISYR+Vzl4dBxz829oN8doqf+xdlskE81r79oW30Tt/tQdKd4gT8K06pPcxLaZu0R2KlMw0Uxx91mKXxY+LrH2squ92cKbHPKZrYiYNd24swlGgBq7+nTtc3/q7n+wYrMwpria/uC1q+SdRsQjJzNVQ74sZIUEEGbFOPL3AgKQKU8IQH+5NhvYCo9E/ISCmN7l419Xh7Z6/VEEEn3rj9q4LhdQIkkapDXnFKQI/0YUeQWZneSyRhWIJk5WmQQttYtFY5tm7t2ifS20Q3haOBnKhvkUlX8xZhQU8g1+UgmIcTAm9c0+NRFz7N/YAMWpLXgVMh5bBAR5CFrTUzWDKULG4GLV9uZienlENbAhJBF5vNcXJUK4fFrwmts8NOcFLITaHhieHjg7zw2Pyab38YPdqBg2lCSPPFkxb+/agsONPN4RQ116TtgO/BMx2GUnhssgYb1hRwtRuWMy2Ob270Y7MvkwU7r6Uw+wDAkz8tqiPmte10i+t91iGewnYyMxsbIIsyMx46w5IpFqpTvXxCwVPMX0Eet/pb4wkVah2nJiUalzdaLy/vvuLeIAl0Kz+5WrOeWaK0rkq1oFhxm17db+ZUX/F3hiXuXGkov1o/D2rtVv/a9TG+Um1UZMc1tqUvVXoYpCGaFv5yvgPysaSy1fdwXk="
   on:
     tags: true
+    all_branches: true
+    condition: "$DEPLOY_TO_FORGE = yes"

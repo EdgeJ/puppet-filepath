@@ -4,7 +4,9 @@
   "author": "EdgeJ",
   "summary": "Recursively manage directory paths natively",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/EdgeJ/puppet-filepath",
+  "project_page": "https://github.com/EdgeJ/puppet-filepath",
+  "issues_url": "https://github.com/EdgeJ/puppet-filepath/issues",
   "dependencies": [
 
   ],

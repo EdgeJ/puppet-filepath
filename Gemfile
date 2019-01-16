@@ -33,6 +33,10 @@ group :acceptance do
   gem "beaker-rspec", '~> 6',  require: false
   gem "beaker-docker",         require: false
 end
+group :release do
+  gem "puppet-blacksmith", require: false
+  gem "pdk",               require: false
+end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
 facter_version = ENV['FACTER_GEM_VERSION']

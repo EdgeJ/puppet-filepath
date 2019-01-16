@@ -11,6 +11,9 @@ Gemfile:
       - gem: beaker-rspec
         version: '~> 6'
       - gem: beaker-docker
+    ':release':
+      - gem: puppet-blacksmith
+      - gem: pdk
 .gitlab-ci.yml:
   delete: true
 spec/spec_helper.rb:
