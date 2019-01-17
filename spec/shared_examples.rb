@@ -22,7 +22,11 @@ shared_examples 'creates_file' do |test_node, manifest, test_dir, owner, group|
 end
 
 shared_examples 'deletes_file' do |test_node, manifest, test_dir|
-  before(:all) { on(test_node, "mkdir -p #{test_dir}") }
+  base_dir = "/#{test_dir.split('/')[1]}"
+  before(:all) do
+    on(test_node, "rm -rf #{base_dir}")
+    on(test_node, "mkdir -p #{test_dir}")
+  end
 
   it 'applies with no errors' do
     apply_manifest_on(test_node, manifest, catch_failures: true, verbose: true)

@@ -73,9 +73,46 @@ hosts.each do |host|
           MANIFEST
         end
 
+        before(:each) { on(host, 'rm -rf /app') }
+
         it 'only manages two levels deep', node: host do
           apply_manifest_on(host, pp, catch_failures: true)
           expect(file('/app/test/filepath')).to be_owned_by('foo')
+          expect(file('/app/test/filepath')).to be_mode(777)
+          expect(file('/app/test')).to be_owned_by('foo')
+          expect(file('/app/test')).to be_mode(777)
+          expect(file('/app')).not_to be_owned_by('foo')
+        end
+      end
+
+      context 'with managedepth => 2 and directory four levels deep' do
+        let(:pp) do
+          <<-MANIFEST
+            filepath { '/app/test/filepath/foo':
+              ensure => present,
+              owner => 'foo',
+              group => 'bar',
+              mode => '0777',
+              managedepth => 2,
+            }
+
+            user { 'foo':
+              ensure => present,
+            }
+
+            group { 'bar':
+              ensure => present,
+            }
+          MANIFEST
+        end
+
+        before(:each) { on(host, 'rm -rf /app') }
+
+        it 'only manages two levels deep', node: host do
+          apply_manifest_on(host, pp, catch_failures: true)
+          expect(file('/app/test/filepath/foo')).to be_owned_by('foo')
+          expect(file('/app/test/filepath')).to be_owned_by('foo')
+          expect(file('/app/test')).not_to be_owned_by('foo')
           expect(file('/app')).not_to be_owned_by('foo')
         end
       end
@@ -94,8 +131,12 @@ hosts.each do |host|
       context 'with managedepth => 2 and directory three levels deep', node: host do
         let(:pp) { "filepath { '/app/test/filepath': ensure => absent, managedepth => 2, }" }
 
-        it 'only deletes two levels deep' do
+        before(:each) do
+          on(host, 'rm -rf /app')
           on(host, 'mkdir -p /app/test/filepath')
+        end
+
+        it 'only deletes two levels deep' do
           apply_manifest_on(host, pp, catch_failures: true)
           expect(file('/app')).to be_directory
           expect(file('/app/test')).not_to exist

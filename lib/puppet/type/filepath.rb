@@ -29,6 +29,7 @@ Puppet::Type.newtype(:filepath) do
 
     validate do |value|
       raise Puppet::Error, _("Managedepth must be integer, not '#{value}'") unless value.is_a?(Integer)
+      raise Puppet::Error, _('Managedepth must be greater than 1') if value < 1
     end
   end
 
