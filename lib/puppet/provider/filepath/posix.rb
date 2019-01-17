@@ -12,7 +12,6 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
     mode = @resource.should(:mode)
     mkdir_r(@resource[:path], mode, @resource[:managedepth])
     @resource.send(:property_fix)
-    :directory_created
   end
 
   def update
@@ -24,21 +23,21 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
   end
 
   def owner=(should)
-    File.send(:chown, should, nil, resource[:path])
-  rescue StandardError => detail
-    raise Puppet::Error, "Failed to set owner to '#{should}': #{detail}", detail.backtrace
+    owner_r(@resource[:path], should, @resource[:managedepth])
   end
 
   def group=(should)
-    File.send(:chown, nil, should, resource[:path])
-  rescue StandardError => detail
-    raise Puppet::Error, "Failed to set group to '#{should}': #{detail}", detail.backtrace
+    group_r(@resource[:path], should, @resource[:managedepth])
+  end
+
+  def mode=(should)
+    mode_r(@resource[:path], should, @resource[:managedepth])
   end
 
   private
 
   def mkdir(path, mode = nil, managedepth = 0)
-    if mode && !managedepth.zero?
+    if mode && managedepth >= 1
       Puppet::Util.withumask(0o00) do
         Dir.mkdir(path, symbolic_mode_to_int(mode, 0o755, true))
       end
@@ -64,5 +63,38 @@ Puppet::Type.type(:filepath).provide(:posix, parent: Puppet::Type.type(:file).pr
       raise Puppet::Error, "Cannot delete #{path}, it is not empty"
     end
     rmdir_r(File.dirname(path), managedepth - 1)
+  end
+
+  def owner_r(path, should, managedepth)
+    return if managedepth < 1 || path == '/'
+    parent = File.dirname(path)
+    owner_r(parent, should, managedepth - 1)
+    begin
+      File.send(:chown, should, nil, path)
+    rescue StandardError => detail
+      raise Puppet::Error, "Failed to set owner to '#{should}': #{detail}", detail.backtrace
+    end
+  end
+
+  def group_r(path, should, managedepth)
+    return if managedepth < 1 || path == '/'
+    parent = File.dirname(path)
+    group_r(parent, should, managedepth - 1)
+    begin
+      File.send(:chown, nil, should, path)
+    rescue StandardError => detail
+      raise Puppet::Error, "Failed to set group to '#{should}': #{detail}", detail.backtrace
+    end
+  end
+
+  def mode_r(path, should, managedepth)
+    return if managedepth < 1 || path == '/'
+    parent = File.dirname(path)
+    mode_r(parent, should, managedepth - 1)
+    begin
+      File.chmod(should.to_i(8), path)
+    rescue => detail
+      raise Puppet::Error, "failed to set mode #{mode} on #{path}: #{detail}", detail.backtrace
+    end
   end
 end

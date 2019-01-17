@@ -57,18 +57,54 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
   end
 
   describe '#create' do
-    it 'creates the resource' do
-      allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
-      allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
-      allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
-      allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+    context 'with default managedepth' do
+      it 'creates the resource' do
+        allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+        allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
 
-      allow(File).to receive(:chown).with(502, nil, path)
-      allow(File).to receive(:chown).with(nil, 502, path)
+        allow(File).to receive(:chown).with(502, nil, path)
+        allow(File).to receive(:chown).with(nil, 502, path)
 
-      expect(Dir).to receive(:mkdir)
+        expect(Dir).to receive(:mkdir)
 
-      provider.create
+        provider.create
+      end
+    end
+
+    context 'with managedepth => 2' do
+      let(:resource) do
+        Puppet::Type.type(:filepath).new(
+          path: path,
+          ensure: 'present',
+          owner: 'foo',
+          group: 'foo',
+          mode: '0770',
+          managedepth: 2,
+          provider: described_class.name,
+        )
+      end
+
+      it 'creates the resource' do
+        allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+        allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+        allow(Puppet::FileSystem).to receive(:exist?).with(File.dirname(File.dirname(path))).and_return(true)
+        allow(Puppet::FileSystem).to receive(:exist?).with(File.dirname(path)).and_return(false)
+
+        expect(File).to receive(:chown).with(502, nil, path)
+        expect(File).to receive(:chown).with(nil, 502, path)
+        expect(File).to receive(:chmod).with(504, path)
+        expect(File).to receive(:chown).with(502, nil, File.dirname(path))
+        expect(File).to receive(:chown).with(nil, 502, File.dirname(path))
+        expect(File).to receive(:chmod).with(504, File.dirname(path))
+
+        expect(Dir).to receive(:mkdir).twice
+
+        provider.create
+      end
     end
   end
 
@@ -83,6 +119,36 @@ describe Puppet::Type.type(:filepath).provider(:posix) do
       expect(File).to receive(:chown).with(nil, 502, path)
 
       provider.update
+    end
+
+    context 'with managedepth => 2' do
+      let(:resource) do
+        Puppet::Type.type(:filepath).new(
+          path: path,
+          ensure: 'present',
+          owner: 'foo',
+          group: 'foo',
+          mode: '0770',
+          managedepth: 2,
+          provider: described_class.name,
+        )
+      end
+
+      it 'recursively updates two levels deep' do
+        allow(Etc).to receive(:getgrnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getgrgid).with(502).and_return(passwd)
+        allow(Etc).to receive(:getpwnam).with('foo').and_return(passwd)
+        allow(Etc).to receive(:getpwuid).with(502).and_return(passwd)
+
+        expect(File).to receive(:chown).with(502, nil, path)
+        expect(File).to receive(:chown).with(nil, 502, path)
+        expect(File).to receive(:chmod).with(504, path)
+        expect(File).to receive(:chown).with(502, nil, File.dirname(path))
+        expect(File).to receive(:chown).with(nil, 502, File.dirname(path))
+        expect(File).to receive(:chmod).with(504, File.dirname(path))
+
+        provider.update
+      end
     end
   end
 
