@@ -2,6 +2,9 @@
 # filepath
 
 [![Build Status](https://travis-ci.org/EdgeJ/puppet-filepath.svg?branch=master)](https://travis-ci.org/EdgeJ/puppet-filepath)
+![Latest Tag](https://img.shields.io/github/tag/edgej/puppet-filepath.svg)
+[![PDK Version](https://img.shields.io/puppetforge/pdk-version/edgej/filepath.svg)](https://puppet.com/docs/pdk)
+[![Puppet Forge](https://img.shields.io/puppetforge/v/vStone/percona.svg)](https://forge.puppet.com/edgej/filepath)
 
 Puppet type to create and manage recursive filepaths without resorting to
 needless hackery.
