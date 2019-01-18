@@ -1,6 +1,6 @@
 {
   "name": "edgej-filepath",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "EdgeJ",
   "summary": "Recursively manage directory paths natively",
   "license": "Apache-2.0",
