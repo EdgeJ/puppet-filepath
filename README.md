@@ -130,7 +130,7 @@ only creation or deletion of the path itself. Use the built-in `file` resource
 to set or remove any file or directory content.
 
 
-Tested on Centos 7 and Ubuntu 14.04.
+Tested on Centos 7, Ubuntu 18.04, and Ubuntu 20.04.
 
 ## Development
 
