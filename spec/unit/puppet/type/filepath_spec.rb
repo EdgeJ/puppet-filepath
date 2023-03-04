@@ -25,7 +25,7 @@ describe Puppet::Type.type(:filepath) do
   end
 
   it 'accepts filemode' do
-    expect(resource[:mode]).to eq('770')
+    expect(resource[:mode]).to eq('0770')
   end
 
   it 'expects a name' do
