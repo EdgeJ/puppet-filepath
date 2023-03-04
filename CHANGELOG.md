@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 1.1.0
+
+**Features**
+* Update metadata to add support for Puppet 7
+* Update metadata to add support for newer OSes
+* Update testing for Puppet 7
+
 ## Release 1.0.1
 
 **Bugfixes**
